@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../axiosConfig";
 
@@ -9,6 +9,8 @@ export default function Login() {
     const [password,setPassword] = useState("");
     const [message,setMessage] = useState("");
 
+    const history = useHistory();
+
     const handleSubmit = (e) =>{
         e.preventDefault();
         axios
@@ -16,6 +18,7 @@ export default function Login() {
             .then((response) => {
                 let data = response.data;
                 localStorage.setItem("user_data", JSON.stringify(data));
+                history.push("/");
         })
         .catch((error) => {
             console.log(error.response.status);
