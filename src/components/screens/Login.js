@@ -1,8 +1,30 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { BASE_URL } from "../../axiosConfig";
 
 export default function Login() {
+    const [username,setUsername] = useState("");
+    const [password,setPassword] = useState("");
+    const [message,setMessage] = useState("");
+
+    const handleSubmit = (e) =>{
+        e.preventDefault();
+        axios
+            .post(`${BASE_URL}/auth/token/`,{  username,   password})
+            .then((response) => {
+                let data = response.data;
+                localStorage.setItem("user_data", JSON.stringify(data));
+        })
+        .catch((error) => {
+            console.log(error.response.status);
+            if (error.response.status ==401) {
+                setMessage(error.response.data.detail);
+            }
+        });
+    };
+
     return (
         <Container>
             <LeftContainer>
@@ -18,14 +40,15 @@ export default function Login() {
                 <LoginContainer>
                     <LoginHeading>Login to your Account</LoginHeading>
                     <LoginInfo>Enter email and password to login</LoginInfo>
-                    <Form>
+                    <Form onSubmit={handleSubmit}>
                         <InputContainer>
-                            <TextInput type="email" placeholder="Email" />
+                            <TextInput onChange={(e) => setUsername(e.target.value)} value={username} type="email" placeholder="Email" />
                         </InputContainer>
                         <InputContainer>
-                            <TextInput type="password" placeholder="Password" />
+                            <TextInput onChange={(e) => setPassword(e.target.value)} value={password} type="password" placeholder="Password" />
                         </InputContainer>
                         <LoginButton to="/auth/create/">Signup Now</LoginButton>
+                        {message && <ErrorMessage>{message}</ErrorMessage>}
                         <ButtonContainer>
                             <SubmitButton>Login</SubmitButton>
                         </ButtonContainer>
